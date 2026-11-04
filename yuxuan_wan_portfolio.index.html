@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YUXUAN WAN — Personal Portfolio | 万雨萱 个人作品集</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter and Noto Sans SC -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Vue 3 CDN -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'bg-ivory': '#F7F6F0',
+                        'mint-light': '#DCEFE5',
+                        'mint-sage': '#A7CDB9',
+                        'brown-choco': '#684A3B',
+                        'taupe-warm': '#E9E3DA',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'Noto Sans SC', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #F7F6F0;
+            color: #684A3B;
+            font-family: 'Inter', 'Noto Sans SC', sans-serif;
+            overflow-x: hidden;
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #F7F6F0;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #A7CDB9;
+            border-radius: 3px;
+        }
+        /* Soft minimalism focus states */
+        *:focus-visible {
+            outline: 2px solid #A7CDB9;
+            outline-offset: 2px;
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-mint-light selection:text-brown-choco">
+    <div id="app" class="min-h-screen flex flex-col">
+        <!-- Mobile Header Navigation -->
+        <header class="lg:hidden sticky top-0 z-50 bg-[#F7F6F0]/90 backdrop-blur-md border-b border-taupe-warm px-6 py-4 flex justify-between items-center">
+            <a href="#home" class="font-bold text-lg tracking-tight text-brown-choco">YUXUAN WAN</a>
+            <div class="flex items-center space-x-4">
+                <!-- Language Switcher Mobile -->
+                <button @click="toggleLang" class="text-xs font-semibold px-2.5 py-1 rounded-full bg-taupe-warm/60 border border-brown-choco/10 hover:bg-mint-light transition-colors">
+                    {{ lang === 'zh' ? 'EN' : '中文' }}
+                </button>
+                <button @click="isMobileMenuOpen = !isMobileMenuOpen" class="p-1 focus:outline-none" aria-label="Toggle Menu">
+                    <i data-lucide="menu" v-if="!isMobileMenuOpen" class="w-6 h-6"></i>
+                    <i data-lucide="x" v-else class="w-6 h-6"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Mobile Navigation Menu Dropdown -->
+        <div v-if="isMobileMenuOpen" class="lg:hidden fixed inset-x-0 top-[65px] z-40 bg-[#F7F6F0] border-b border-taupe-warm p-6 space-y-4 shadow-lg">
+            <nav class="flex flex-col space-y-3 font-medium">
+                <a v-for="item in navItems" :key="item.id" :href="'#' + item.id" @click="isMobileMenuOpen = false" class="py-2 border-b border-taupe-warm/40 hover:text-mint-sage transition-colors">
+                    {{ t(item.zh, item.en) }}
+                </a>
+            </nav>
+            <div class="pt-4 flex flex-col space-y-2 text-sm text-brown-choco/80">
+                <p>Email: <span class="font-mono text-xs">EMAIL_TO_CONFIRM</span></p>
+                <p>WeChat: <span class="font-mono text-xs">WECHAT_TO_CONFIRM</span></p>
+            </div>
+        </div>
+
+        <!-- Desktop Split Layout (Sticky Left 40%, Scroll Right 60%) -->
+        <div class="max-w-7xl w-full mx-auto flex-1 flex flex-col lg:flex-row px-4 sm:px-6 lg:px-8">
+            
+            <!-- Left Fixed Sidebar (Desktop ~40%) -->
+            <aside class="hidden lg:flex lg:w-[38%] xl:w-[35%] flex-col justify-between sticky top-0 h-screen py-12 pr-12 border-r border-taupe-warm/60">
+                <div>
+                    <!-- Brand Header -->
+                    <div class="space-y-2">
+                        <span class="inline-block px-3 py-1 bg-mint-light text-brown-choco text-xs rounded-full font-medium tracking-wide">
+                            {{ t('编辑 / 内容运营 / 新闻采写', 'Editorial & Content Operations') }}
+                        </span>
+                        <h1 class="text-4xl xl:text-5xl font-bold tracking-tight text-brown-choco">
+                            {{ t('万雨萱', 'Yuxuan Wan') }}
+                        </h1>
+                        <p class="text-sm font-medium tracking-widest text-brown-choco/60 uppercase pt-1">
+                            YUXUAN WAN
+                        </p>
+                    </div>
+
+                    <!-- Personal Manifesto Statement -->
+                    <div class="mt-8 space-y-3 text-brown-choco/80 text-sm leading-relaxed border-l-2 border-mint-sage pl-4">
+                        <p class="text-base font-semibold text-brown-choco">
+                            {{ t('“以文字为起点，以内容为媒介。”', '“Words into ideas.”') }}
+                        </p>
+                        <p>
+                            {{ t('注重细节与效率的沟通专业人士。具备教辅精校、新闻采写及政务/文旅新媒体运营经验。', 'Detail-oriented communications specialist experienced in editorial proofreading, news reporting, and government media operations.') }}
+                        </p>
+                    </div>
+
+                    <!-- Navigation Links with ScrollSpy Effect -->
+                    <nav class="mt-12 space-y-2">
+                        <a v-for="item in navItems" :key="item.id" :href="'#' + item.id" 
+                           class="flex items-center space-x-3 py-2 text-sm font-medium tracking-wide transition-all group"
+                           :class="activeSection === item.id ? 'text-brown-choco font-bold translate-x-1' : 'text-brown-choco/60 hover:text-brown-choco'">
+                            <span class="w-2 h-2 rounded-full transition-all"
+                                  :class="activeSection === item.id ? 'bg-mint-sage scale-125' : 'bg-taupe-warm group-hover:bg-mint-light'"></span>
+                            <span>{{ t(item.zh, item.en) }}</span>
+                        </a>
+                    </nav>
+                </div>
+
+                <!-- Footer & Language Switcher & Contact Placeholder -->
+                <div class="space-y-6 pt-6 border-t border-taupe-warm/60">
+                    <!-- Language Switcher Button -->
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs text-brown-choco/60 uppercase tracking-wider">{{ t('语言 / Language', 'Language') }}</span>
+                        <div class="inline-flex rounded-full p-1 bg-taupe-warm/40 border border-brown-choco/10">
+                            <button @click="setLang('zh')" :class="lang === 'zh' ? 'bg-white shadow-sm font-bold text-brown-choco' : 'text-brown-choco/60'" class="px-3 py-1 text-xs rounded-full transition-all">
+                                中文
+                            </button>
+                            <button @click="setLang('en')" :class="lang === 'en' ? 'bg-white shadow-sm font-bold text-brown-choco' : 'text-brown-choco/60'" class="px-3 py-1 text-xs rounded-full transition-all">
+                                English
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Contact Placeholders -->
+                    <div class="text-xs space-y-1.5 text-brown-choco/70">
+                        <div class="flex items-center space-x-2">
+                            <i data-lucide="mail" class="w-3.5 h-3.5 text-mint-sage"></i>
+                            <span class="font-mono">EMAIL_TO_CONFIRM</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <i data-lucide="message-square" class="w-3.5 h-3.5 text-mint-sage"></i>
+                            <span class="font-mono">WECHAT_TO_CONFIRM</span>
+                        </div>
+                    </div>
+
+                    <p class="text-[11px] text-brown-choco/40">
+                        © 2026 Yuxuan Wan. All rights reserved.
+                    </p>
+                </div>
+            </aside>
+
+            <!-- Right Scrollable Content Area (Desktop ~62%) -->
+            <main class="w-full lg:w-[62%] xl:w-[65%] lg:pl-12 py-8 lg:py-12 space-y-20">
+                
+                <!-- HOME SECTION -->
+                <section id="home" class="space-y-12 scroll-mt-20">
+                    <!-- Hero Banner Card -->
+                    <div class="bg-white/60 backdrop-blur-sm rounded-2xl p-8 lg:p-10 border border-taupe-warm shadow-sm space-y-6">
+                        <div class="inline-flex items-center space-x-2 text-xs font-semibold uppercase tracking-wider text-brown-choco/60">
+                            <span class="w-2 h-2 rounded-full bg-mint-sage"></span>
+                            <span>{{ t('求职意向：编辑 / 行政 / 运营', 'Target Roles: Editor / Admin / Operations') }}</span>
+                        </div>
+                        <h2 class="text-2xl sm:text-3xl font-bold leading-tight text-brown-choco">
+                            {{ t('专注文字打磨，构建清晰有效的新媒体传播与内容资产。', 'Crafting precise words, structuring effective content and media assets.') }}
+                        </h2>
+                        <p class="text-sm leading-relaxed text-brown-choco/80">
+                            {{ t('毕业于江汉大学汉语言文学专业（GPA 88/100，前20%）。具有3万+页教辅出版物精校经验，12篇独立文旅新闻采写经历，以及政务与官方新媒体运维体系化实践。', 'BA in Chinese Language and Literature from Jianghan University (Avg 88/100, Top 20%). Proven record in 30,000+ pages proofread, 12 published tourism news reports, and government portal operations.') }}
+                        </p>
+                        <div class="pt-2 flex flex-wrap gap-3">
+                            <a href="#works" class="inline-flex items-center space-x-2 px-5 py-2.5 rounded-full bg-brown-choco text-bg-ivory text-xs font-medium hover:bg-brown-choco/90 transition-all shadow-sm">
+                                <span>{{ t('浏览精选作品', 'View Selected Works') }}</span>
+                                <i data-lucide="arrow-down-right" class="w-4 h-4"></i>
+                            </a>
+                            <a href="#contact" class="inline-flex items-center space-x-2 px-5 py-2.5 rounded-full bg-mint-light text-brown-choco text-xs font-medium hover:bg-mint-sage/30 transition-all">
+                                <span>{{ t('联系方式 & 简历', 'Contact & Resume') }}</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Core Metrics Grid -->
+                    <div class="space-y-4">
+                        <h3 class="text-xs font-bold uppercase tracking-wider text-brown-choco/50">
+                            {{ t('核心实践数据（源自简历真实记录）', 'Key Metrics (Resume Verified)') }}
+                        </h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div v-for="metric in metrics" :key="metric.id" class="bg-white/40 p-5 rounded-xl border border-taupe-warm/80 hover:border-mint-sage transition-all">
+                                <div class="text-2xl lg:text-3xl font-bold font-mono text-brown-choco">
+                                    {{ metric.value }}
+                                </div>
+                                <div class="text-xs font-semibold text-brown-choco/90 mt-1">
+                                    {{ t(metric.titleZh, metric.titleEn) }}
+                                </div>
+                                <p class="text-[11px] text-brown-choco/60 mt-2 leading-relaxed">
+                                    {{ t(metric.contextZh, metric.contextEn) }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ABOUT SECTION -->
+                <section id="about" class="space-y-10 scroll-mt-20 border-t border-taupe-warm/60 pt-16">
+                    <div class="space-y-2">
+                        <span class="text-xs font-bold tracking-widest text-mint-sage uppercase">About Profile</span>
+                        <h2 class="text-2xl font-bold text-brown-choco">{{ t('个人简介与核心能力', 'About Me & Core Competencies') }}</h2>
+                    </div>
+
+                    <!-- About Paragraph -->
+                    <div class="bg-white/40 p-6 rounded-2xl border border-taupe-warm text-sm leading-relaxed text-brown-choco/80 space-y-4">
+                        <p>
+                            {{ t('我是万雨萱，毕业于江汉大学汉语言文学专业，扎实的语言学与传播学底子赋予了我敏锐的文字感知力与严谨的审校习惯。在文化传播公司与主流媒体的实践中，我积累了从大体量文字校对、主题新闻采写，到政务新媒体标准化排版与运营的全链路经验。', 'I am Yuxuan Wan, a Chinese Language & Literature graduate from Jianghan University. My academic foundation bestows a keen textual sensitivity and rigorous proofreading habits. Through hands-on practice in publishing and mainstream media, I built end-to-end expertise spanning large-scale editorial proofreading, thematic news reporting, and standardized government media publishing.') }}
+                        </p>
+                    </div>
+
+                    <!-- What I Do Grid -->
+                    <div class="space-y-4">
+                        <h3 class="text-xs font-bold uppercase tracking-wider text-brown-choco/50">{{ t('核心业务方向 / What I Do', 'What I Do') }}</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div v-for="service in services" :key="service.titleZh" class="bg-white/60 p-5 rounded-xl border border-taupe-warm">
+                                <div class="w-8 h-8 rounded-lg bg-mint-light flex items-center justify-center text-brown-choco mb-3">
+                                    <i :data-lucide="service.icon" class="w-4 h-4"></i>
+                                </div>
+                                <h4 class="text-sm font-bold text-brown-choco">{{ t(service.titleZh, service.titleEn) }}</h4>
+                                <p class="text-xs text-brown-choco/70 mt-2 leading-relaxed">{{ t(service.descZh, service.descEn) }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Competencies Tags -->
+                    <div class="space-y-3">
+                        <h3 class="text-xs font-bold uppercase tracking-wider text-brown-choco/50">{{ t('技能与资格清单', 'Core Competencies & Qualifications') }}</h3>
+                        <div class="flex flex-wrap gap-2">
+                            <span v-for="skill in skills" :key="skill" class="px-3 py-1.5 rounded-lg bg-taupe-warm/50 border border-brown-choco/10 text-xs font-medium text-brown-choco">
+                                {{ skill }}
+                            </span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- RESUME SECTION -->
+                <section id="resume" class="space-y-10 scroll-mt-20 border-t border-taupe-warm/60 pt-16">
+                    <div class="flex justify-between items-end">
+                        <div class="space-y-2">
+                            <span class="text-xs font-bold tracking-widest text-mint-sage uppercase">Experience & Track Record</span>
+                            <h2 class="text-2xl font-bold text-brown-choco">{{ t('职业经历与履历', 'Professional Resume') }}</h2>
+                        </div>
+                        <!-- PDF Download Placeholders -->
+                        <div class="flex space-x-2">
+                            <span class="inline-flex items-center text-xs px-3 py-1.5 rounded-full bg-taupe-warm/60 text-brown-choco/60 border border-brown-choco/10" title="待本人核实替换具体PDF文件">
+                                <i data-lucide="file-text" class="w-3.5 h-3.5 mr-1"></i> {{ t('简历PDF (待补充)', 'Resume PDF (Pending)') }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Work Experience Timeline -->
+                    <div class="space-y-8 relative before:absolute before:inset-0 before:left-3.5 before:w-0.5 before:bg-taupe-warm">
+                        
+                        <!-- Work Item 1 -->
+                        <div class="relative pl-9 space-y-2">
+                            <div class="absolute left-2 top-1.5 w-3 h-3 rounded-full bg-brown-choco border-2 border-[#F7F6F0]"></div>
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between text-xs text-brown-choco/60">
+                                <span class="font-semibold text-brown-choco text-sm">{{ t('武汉天成贵龙文化传播有限公司', 'Wuhan Tiancheng Guilong Culture Communication') }}</span>
+                                <span class="font-mono">2025.08 — 2026.05</span>
+                            </div>
+                            <p class="text-xs font-medium text-mint-sage uppercase tracking-wider">{{ t('编辑 / Editor', 'Editor') }}</p>
+                            <ul class="text-xs text-brown-choco/80 space-y-2 pt-2 list-disc list-inside leading-relaxed">
+                                <li>{{ t('内容校对：独立完成初中语文《状元大课堂》《创优作业》等核心教辅的校对工作，累计校对 3 万+页稿件，严格保障出版物内容质量。', 'Content Proofreading: Independently led proofreading for core middle-school Chinese supplementary educational series, reviewing over 30,000 manuscript pages.') }}</li>
+                                <li>{{ t('项目支持：参与内蒙古、西安等区域教辅评议项目，对标当地教材版本与教学需求，梳理适配性内容调整方案，助力团队项目中标率提升 20%。', 'Project Support: Contributed to regional educational material evaluation projects (Inner Mongolia & Xi\'an), formulating targeted modification proposals that helped increase team project bid win rate by 20%.') }}</li>
+                            </ul>
+                        </div>
+
+                        <!-- Work Item 2 (Internship) -->
+                        <div class="relative pl-9 space-y-2">
+                            <div class="absolute left-2 top-1.5 w-3 h-3 rounded-full bg-mint-sage border-2 border-[#F7F6F0]"></div>
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between text-xs text-brown-choco/60">
+                                <span class="font-semibold text-brown-choco text-sm">{{ t('长江日报', 'Changjiang Daily') }}</span>
+                                <span class="font-mono">2024.07 — 2024.10</span>
+                            </div>
+                            <p class="text-xs font-medium text-mint-sage uppercase tracking-wider">{{ t('记者实习生 / Reporter Intern', 'Reporter Intern') }}</p>
+                            <ul class="text-xs text-brown-choco/80 space-y-2 pt-2 list-disc list-inside leading-relaxed">
+                                <li>{{ t('内容创作：独立策划并撰写武汉文旅主题新闻稿 12 篇；协同武汉市文旅局编纂 2023 年国庆旅游官方指南，负责活动板块撰写与章节引言创作，累计触达读者 5 万+人次。', 'Content Creation: Independently planned and authored 12 news reports on Wuhan culture and tourism. Co-authored Official 2023 National Day Tourism Guide, reaching over 50,000 readers.') }}</li>
+                                <li>{{ t('新媒体运营：负责区政府公众号选题、撰写、排版与日常发布；维护武汉市网信办网站新闻资讯板块，建立内容格式标准化流程（分段提炼、关键词标注、层级排版），用户内容浏览效率提升 35%。', 'New Media Operations: Managed topic selection, writing, formatting for district government WeChat account; maintained cyberspace portal creating standardized workflow, raising user browsing efficiency by 35%.') }}</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Education Card -->
+                    <div class="bg-white/40 p-6 rounded-2xl border border-taupe-warm space-y-3">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h3 class="font-bold text-sm text-brown-choco">{{ t('江汉大学', 'Jianghan University') }}</h3>
+                                <p class="text-xs text-brown-choco/70">{{ t('汉语言文学｜本科 (GPA 88分 / 排名前20%)', 'B.A. in Chinese Language and Literature (Avg Score: 88/100, Top 20%)') }}</p>
+                            </div>
+                            <span class="text-xs font-mono text-brown-choco/60">2021.09 — 2025.07</span>
+                        </div>
+                        <p class="text-xs text-brown-choco/70 leading-relaxed">
+                            <span class="font-semibold">{{ t('核心课程：', 'Core Coursework: ') }}</span>
+                            {{ t('现代汉语、古代汉语、写作概论、传播学概论、编辑出版学、新媒体运营实务。', 'Modern Chinese, Ancient Chinese, Fundamentals of Writing, Introduction to Communication Studies, Editing & Publishing Studies, New Media Operations Practice.') }}
+                        </p>
+                    </div>
+                </section>
+
+                <!-- WORKS SECTION (54 Total Verified Records) -->
+                <section id="works" class="space-y-10 scroll-mt-20 border-t border-taupe-warm/60 pt-16">
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-end flex-wrap gap-2">
+                            <div>
+                                <span class="text-xs font-bold tracking-widest text-mint-sage uppercase">Portfolio Gallery</span>
+                                <h2 class="text-2xl font-bold text-brown-choco">{{ t('代表性作品档案', 'Selected Editorial Works') }}</h2>
+                            </div>
+                            <span class="text-xs font-mono text-brown-choco/50">
+                                {{ t('共收录 54 条真实文献 / 54 Verified Links', '54 Verified Records') }}
+                            </span>
+                        </div>
+                        <p class="text-xs text-brown-choco/70">
+                            {{ t('按事实原则录入原文链接。新闻稿与公众号包含外部查看入口；政务网站包含 38 条栏目档案记录。未核实字段严格保持空缺，不编造标题或数据。', 'Recorded strictly based on factual resume files. All external links can be accessed directly. Unverified metadata fields are left blank without fabrication.') }}
+                        </p>
+                    </div>
+
+                    <!-- Filter Tabs -->
+                    <div class="flex flex-wrap gap-2 border-b border-taupe-warm pb-4">
+                        <button v-for="tab in categoryTabs" :key="tab.id"
+                                @click="activeTab = tab.id"
+                                class="px-4 py-2 rounded-full text-xs font-medium transition-all"
+                                :class="activeTab === tab.id ? 'bg-brown-choco text-bg-ivory shadow-sm' : 'bg-taupe-warm/40 text-brown-choco/70 hover:bg-taupe-warm'">
+                            {{ t(tab.zh, tab.en) }} ({{ getCategoryCount(tab.id) }})
+                        </button>
+                    </div>
+
+                    <!-- Works Items List -->
+                    <div class="space-y-4">
+                        
+                        <!-- News & Editorial Cards (7 items) -->
+                        <div v-if="activeTab === 'all' || activeTab === 'news'" class="space-y-4">
+                            <h3 v-if="activeTab === 'all'" class="text-xs font-bold text-brown-choco/50 uppercase tracking-wider">
+                                {{ t('新闻稿作品 (7篇)', 'News & Editorial (7)') }}
+                            </h3>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <a v-for="item in newsList" :key="item.id" :href="item.url" target="_blank" rel="noopener noreferrer"
+                                   class="group bg-white/60 p-5 rounded-xl border border-taupe-warm hover:border-mint-sage hover:shadow-sm transition-all flex flex-col justify-between">
+                                    <div class="space-y-3">
+                                        <div class="flex justify-between items-center text-[11px] text-brown-choco/60">
+                                            <span class="px-2 py-0.5 rounded bg-mint-light text-brown-choco font-medium">{{ item.platform }}</span>
+                                            <span class="font-mono text-brown-choco/40">{{ item.date || t('日期待核实', 'Date Pending') }}</span>
+                                        </div>
+                                        <h4 class="text-xs font-bold text-brown-choco group-hover:text-mint-sage transition-colors line-clamp-2">
+                                            {{ item.title || t('大武汉App新闻稿原文条目 #' + item.id, 'Wuhan App News Article #' + item.id) }}
+                                        </h4>
+                                        <p class="text-[11px] text-brown-choco/60 line-clamp-2">
+                                            {{ item.summary || t('职责：独立策划撰写武汉文旅新闻稿。详细内容点击前往大武汉App阅读原文。', 'Role: Planned & written independently. Click to read original news article.') }}
+                                        </p>
+                                    </div>
+                                    <div class="pt-4 flex items-center justify-between text-[11px] text-brown-choco/70 font-medium border-t border-taupe-warm/40 mt-3">
+                                        <span>{{ item.myRole || t('独立策划撰写', 'Author') }}</span>
+                                        <span class="inline-flex items-center text-mint-sage group-hover:translate-x-0.5 transition-transform">
+                                            {{ t('打开原文', 'Open Article') }} <i data-lucide="external-link" class="w-3 h-3 ml-1"></i>
+                                        </span>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- WeChat Editorial Cards (9 items) -->
+                        <div v-if="activeTab === 'all' || activeTab === 'wechat'" class="space-y-4 pt-4">
+                            <h3 v-if="activeTab === 'all'" class="text-xs font-bold text-brown-choco/50 uppercase tracking-wider">
+                                {{ t('微信公众号排版与运营 (9篇)', 'WeChat Editorial (9)') }}
+                            </h3>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                <a v-for="item in wechatList" :key="item.id" :href="item.url" target="_blank" rel="noopener noreferrer"
+                                   class="group bg-white/60 p-4 rounded-xl border border-taupe-warm hover:border-mint-sage hover:shadow-sm transition-all flex flex-col justify-between">
+                                    <div class="space-y-2">
+                                        <!-- Article Thumbnail Placeholder Card -->
+                                        <div class="w-full h-24 bg-taupe-warm/40 rounded-lg flex flex-col items-center justify-center p-3 text-center border border-brown-choco/5 group-hover:bg-mint-light/40 transition-colors">
+                                            <i data-lucide="layout" class="w-5 h-5 text-brown-choco/40 mb-1"></i>
+                                            <span class="text-[10px] text-brown-choco/60 font-mono">{{ t('微信图文排版作品', 'WeChat Article') }}</span>
+                                        </div>
+                                        <h4 class="text-xs font-bold text-brown-choco group-hover:text-mint-sage transition-colors line-clamp-2">
+                                            {{ item.title || t('微信公众号文章条目 #' + item.id, 'WeChat Official Post #' + item.id) }}
+                                        </h4>
+                                    </div>
+                                    <div class="pt-3 flex items-center justify-between text-[10px] text-brown-choco/60 border-t border-taupe-warm/40 mt-3">
+                                        <span>{{ item.myRole || t('选题/撰写/排版', 'Editor & Layout') }}</span>
+                                        <span class="text-mint-sage group-hover:underline flex items-center">
+                                            {{ t('阅读', 'Read') }} <i data-lucide="chevron-right" class="w-3 h-3"></i>
+                                        </span>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Government Media Portal Archive (38 items) -->
+                        <div v-if="activeTab === 'all' || activeTab === 'government'" class="space-y-4 pt-4">
+                            <h3 v-if="activeTab === 'all'" class="text-xs font-bold text-brown-choco/50 uppercase tracking-wider">
+                                {{ t('武汉市委网信办网站维护档案 (38条)', 'Cyberspace Portal Maintenance Records (38)') }}
+                            </h3>
+                            <div class="bg-white/60 rounded-xl border border-taupe-warm overflow-hidden text-xs">
+                                <div class="px-4 py-3 bg-taupe-warm/30 font-semibold text-brown-choco flex justify-between items-center border-b border-taupe-warm/60">
+                                    <span>{{ t('网信办栏目条目 (已录入标准数据库)', 'Portal Column Records') }}</span>
+                                    <span class="font-mono text-[11px] text-brown-choco/60">38 Items</span>
+                                </div>
+                                <div class="divide-y divide-taupe-warm/40 max-h-96 overflow-y-auto">
+                                    <div v-for="(item, index) in govList" :key="item.id" 
+                                         class="p-3.5 hover:bg-mint-light/20 transition-colors flex items-center justify-between gap-4">
+                                        <div class="flex items-center space-x-3 truncate">
+                                            <span class="font-mono text-[10px] text-brown-choco/40 w-6">{{ index + 1 }}</span>
+                                            <span class="px-2 py-0.5 text-[10px] rounded font-medium bg-taupe-warm/60 text-brown-choco shrink-0">
+                                                {{ item.section }}
+                                            </span>
+                                            <a :href="item.url" target="_blank" rel="noopener noreferrer" class="truncate font-medium text-brown-choco hover:text-mint-sage">
+                                                {{ item.url }}
+                                            </a>
+                                        </div>
+                                        <div class="shrink-0 flex items-center space-x-2">
+                                            <span class="text-[10px] text-brown-choco/50 hidden sm:inline">{{ item.myRole }}</span>
+                                            <a :href="item.url" target="_blank" rel="noopener noreferrer" class="text-brown-choco/60 hover:text-brown-choco p-1">
+                                                <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </section>
+
+                <!-- CONTACT SECTION -->
+                <section id="contact" class="space-y-8 scroll-mt-20 border-t border-taupe-warm/60 pt-16 pb-12">
+                    <div class="space-y-2">
+                        <span class="text-xs font-bold tracking-widest text-mint-sage uppercase">Get In Touch</span>
+                        <h2 class="text-2xl font-bold text-brown-choco">{{ t('联系方式与简历获取', 'Contact & Downloads') }}</h2>
+                    </div>
+
+                    <div class="bg-white/60 p-8 rounded-2xl border border-taupe-warm space-y-6">
+                        <p class="text-xs text-brown-choco/80 leading-relaxed">
+                            {{ t('如果您对我的文字精校能力、文旅采写经验或新媒体运营背景感兴趣，欢迎通过以下方式与我取得联系。', 'If you are interested in my proofreading, news copywriting, or media operations background, feel free to reach out.') }}
+                        </p>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                            <!-- Email Box -->
+                            <div class="p-4 rounded-xl bg-bg-ivory border border-taupe-warm space-y-1">
+                                <div class="text-[11px] font-semibold text-brown-choco/50 uppercase tracking-wider flex items-center">
+                                    <i data-lucide="mail" class="w-3.5 h-3.5 mr-1 text-mint-sage"></i> Email
+                                </div>
+                                <div class="font-mono text-sm font-bold text-brown-choco select-all">
+                                    EMAIL_TO_CONFIRM
+                                </div>
+                                <p class="text-[10px] text-brown-choco/40">{{ t('（点击或选中复制常用邮箱）', '(Click or select to copy)') }}</p>
+                            </div>
+
+                            <!-- WeChat Box -->
+                            <div class="p-4 rounded-xl bg-bg-ivory border border-taupe-warm space-y-1">
+                                <div class="text-[11px] font-semibold text-brown-choco/50 uppercase tracking-wider flex items-center">
+                                    <i data-lucide="message-square" class="w-3.5 h-3.5 mr-1 text-mint-sage"></i> WeChat
+                                </div>
+                                <div class="font-mono text-sm font-bold text-brown-choco select-all">
+                                    WECHAT_TO_CONFIRM
+                                </div>
+                                <p class="text-[10px] text-brown-choco/40">{{ t('（预留微信号占位符）', '(WeChat placeholder)') }}</p>
+                            </div>
+                        </div>
+
+                        <!-- Resume Downloads Card Placeholder -->
+                        <div class="pt-4 border-t border-taupe-warm/60 flex flex-col sm:flex-row justify-between items-center gap-4">
+                            <div>
+                                <h4 class="text-xs font-bold text-brown-choco">{{ t('简历文件下载入口', 'Resume Download Links') }}</h4>
+                                <p class="text-[11px] text-brown-choco/60">{{ t('简历PDF文件待本人核实后绑定开放', 'PDF attachments pending owner confirmation') }}</p>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button disabled class="px-4 py-2 rounded-lg bg-taupe-warm/60 text-brown-choco/50 text-xs font-medium cursor-not-allowed">
+                                    {{ t('中文简历 PDF', 'Chinese Resume') }}
+                                </button>
+                                <button disabled class="px-4 py-2 rounded-lg bg-taupe-warm/60 text-brown-choco/50 text-xs font-medium cursor-not-allowed">
+                                    {{ t('英文简历 PDF', 'English Resume') }}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- Application Script Engine -->
+    <script>
+        const { createApp, ref, computed, onMounted } = Vue;
+
+        createApp({
+            setup() {
+                const lang = ref('zh');
+                const activeSection = ref('home');
+                const activeTab = ref('all');
+                const isMobileMenuOpen = ref(false);
+
+                const navItems = [
+                    { id: 'home', zh: '首页', en: 'Home' },
+                    { id: 'about', zh: '个人简介', en: 'About' },
+                    { id: 'resume', zh: '履历详情', en: 'Resume' },
+                    { id: 'works', zh: '作品档案', en: 'Works' },
+                    { id: 'contact', zh: '联系方式', en: 'Contact' },
+                ];
+
+                const categoryTabs = [
+                    { id: 'all', zh: '全部作品', en: 'All Works' },
+                    { id: 'news', zh: '新闻稿', en: 'News & Editorial' },
+                    { id: 'wechat', zh: '微信公众号', en: 'WeChat Editorial' },
+                    { id: 'government', zh: '网信办维护', en: 'Government Portal' },
+                ];
+
+                const metrics = [
+                    {
+                        id: 1,
+                        value: '30,000+',
+                        titleZh: '页教辅出版物精校',
+                        titleEn: 'Manuscript Pages Proofread',
+                        contextZh: '独立完成初中语文《状元大课堂》《创优作业》等核心教辅校对。',
+                        contextEn: 'Independently proofread core middle-school Chinese supplementary materials.'
+                    },
+                    {
+                        id: 2,
+                        value: '12 篇',
+                        titleZh: '独立策划撰写新闻稿',
+                        titleEn: 'Independent News Reports',
+                        contextZh: '实习期间独立策划并撰写武汉文旅主题新闻稿。',
+                        contextEn: 'Planned and written on Wuhan culture and tourism during internship.'
+                    },
+                    {
+                        id: 3,
+                        value: '50,000+',
+                        titleZh: '官方文旅指南读者触达',
+                        titleEn: 'Tourism Guide Reader Reach',
+                        contextZh: '协同文旅局编纂国庆指南，负责活动板块与引言撰写（团队指南项目成果）。',
+                        contextEn: 'Co-authored National Day Tourism Guide activity sections.'
+                    },
+                    {
+                        id: 4,
+                        value: '35%',
+                        titleZh: '内容浏览效率提升',
+                        titleEn: 'Browsing Efficiency Boost',
+                        contextZh: '维护武汉网信办网站资讯板块，建立标准化排版分段流程。',
+                        contextEn: 'Introduced content chunking & keyword tagging workflows.'
+                    }
+                ];
+
+                const services = [
+                    {
+                        icon: 'file-check',
+                        titleZh: '文字审校与教辅精校',
+                        titleEn: 'Editorial Proofreading',
+                        descZh: '大体量文稿对标严审，确保文字规范、标点严谨、出版物符合行业极高出版质量标准。',
+                        descEn: 'Large-scale manuscript review ensuring publishing standards and high editorial accuracy.'
+                    },
+                    {
+                        icon: 'pen-tool',
+                        titleZh: '新闻采写与选题策划',
+                        titleEn: 'News Reporting & Writing',
+                        descZh: '具备文旅、政务及文化主题新闻敏感度，独立完成选题立意、资料整理与成稿。',
+                        descEn: 'Cultivated reporting instincts for cultural, government and tourism journalism.'
+                    },
+                    {
+                        icon: 'layout',
+                        titleZh: '新媒体运营与排版',
+                        titleEn: 'New Media Operations',
+                        descZh: '熟练掌握公众号排版、视觉呈现、层级分段与推送运营，建立规范化发布流程。',
+                        descEn: 'Mastering visual styling, content hierarchy, and publishing workflows on official platforms.'
+                    },
+                    {
+                        icon: 'folder-check',
+                        titleZh: '政务档案与项目支持',
+                        titleEn: 'Project & Portal Operations',
+                        descZh: '支持区域教辅评议项目与官方网站维护，提供信息整理与教案适配优化方案。',
+                        descEn: 'Supporting regional bidding evaluations and government portal content updates.'
+                    }
+                ];
+
+                const skills = [
+                    'Copywriting (文案撰写)',
+                    'Editorial Proofreading (文字审校)',
+                    'New Media Operations (新媒体运营)',
+                    'Content Planning (内容策划)',
+                    'Project Operations (项目支持)',
+                    'Photography (摄影)',
+                    'Video Editing (视频剪辑)',
+                    'CET-6 (大学英语六级)',
+                    'National Mandarin Test 2-A (普通话二级甲等)',
+                    'Class C1 Driver License (驾驶证)'
+                ];
+
+                // 7 News Items Verified
+                const newsList = [
+                    { id: 1, url: 'http://m.app.dawuhanapp.com/p/41493496.html?t=1793721572', platform: '大武汉App', title: '', date: '', summary: '', myRole: '独立策划撰写' },
+                    { id: 2, url: 'http://m.app.dawuhanapp.com/p/41769950.html?t=1793721579', platform: '大武汉App', title: '', date: '', summary: '', myRole: '独立策划撰写' },
+                    { id: 3, url: 'http://m.app.dawuhanapp.com/p/41912664.html?t=1793721583', platform: '大武汉App', title: '', date: '', summary: '', myRole: '独立策划撰写' },
+                    { id: 4, url: 'http://m.app.dawuhanapp.com/p/41445026.html?t=1793721588', platform: '大武汉App', title: '', date: '', summary: '', myRole: '独立策划撰写' },
+                    { id: 5, url: 'http://m.app.dawuhanapp.com/p/41873374.html?t=1793721597', platform: '大武汉App', title: '', date: '', summary: '', myRole: '独立策划撰写' },
+                    { id: 6, url: 'http://m.app.dawuhanapp.com/p/41176461.html?t=1793721601', platform: '大武汉App', title: '', date: '', summary: '', myRole: '独立策划撰写' },
+                    { id: 7, url: 'http://m.app.dawuhanapp.com/p/41530704.html?t=1793721605', platform: '大武汉App', title: '', date: '', summary: '', myRole: '独立策划撰写' }
+                ];
+
+                // 9 WeChat Items Verified
+                const wechatList = [
+                    { id: 1, url: 'https://mp.weixin.qq.com/s/MqJlEaBoJxUhdq5Klvo4dg', title: '', myRole: '选题/撰写/排版' },
+                    { id: 2, url: 'https://mp.weixin.qq.com/s/gaoTXYVR0nioFqjSBGIw0w', title: '', myRole: '选题/撰写/排版' },
+                    { id: 3, url: 'https://mp.weixin.qq.com/s/ODIj98X79phbBUQgMl0poQ', title: '', myRole: '选题/撰写/排版' },
+                    { id: 4, url: 'https://mp.weixin.qq.com/s/L8N8DxL2Nt3QZjdW3pHTfA', title: '', myRole: '选题/撰写/排版' },
+                    { id: 5, url: 'https://mp.weixin.qq.com/s/-w1OjgoKAUFEdqss4qmudw', title: '', myRole: '选题/撰写/排版' },
+                    { id: 6, url: 'https://mp.weixin.qq.com/s/5WR9PFRR1Ko0xxUfZ-enSg', title: '', myRole: '选题/撰写/排版' },
+                    { id: 7, url: 'https://mp.weixin.qq.com/s/pIWwc7rQo_d88sXjI00T8w', title: '', myRole: '选题/撰写/排版' },
+                    { id: 8, url: 'https://mp.weixin.qq.com/s/M3FLtAE3UnoHrkUvH2mCEQ', title: '', myRole: '选题/撰写/排版' },
+                    { id: 9, url: 'https://mp.weixin.qq.com/s/McqWxne0xjho9QlXGxpRbw', title: '', myRole: '选题/撰写/排版' }
+                ];
+
+                // 38 Government Portal Links (Exactly mapping all supplied URLs)
+                const govRaw = [
+                    // gzdt (3)
+                    { section: '工作动态', url: 'http://www.whwx.gov.cn/gzdt/202307/t20230721_2235241.shtml' },
+                    { section: '工作动态', url: 'http://www.whwx.gov.cn/gzdt/202307/t20230728_2238360.shtml' },
+                    { section: '工作动态', url: 'http://www.whwx.gov.cn/gzdt/202308/t20230815_2247383.shtml' },
+                    // tzgg (2)
+                    { section: '通知公告', url: 'http://www.whwx.gov.cn/tzgg/202307/t20230727_2238151.shtml' },
+                    { section: '通知公告', url: 'http://www.whwx.gov.cn/tzgg/202308/t20230809_2244401.shtml' },
+                    // wlcb/wsznl (14)
+                    { section: '网络文明', url: 'http://www.whwx.gov.cn/wlcb/wsznl/202307/t20230727_2238149.shtml' },
+                    { section: '网络文明', url: 'http://www.whwx.gov.cn/wlcb/wsznl/202307/t20230728_2238319.shtml' },
+                    { section: '网络文明', url: 'http://www.whwx.gov.cn/wlcb/wsznl/202308/t20230801_2240861.shtml' },
+                    { section: '网络文明', url: 'http://www.whwx.gov.cn/wlcb/wsznl/202308/t20230801_2240916.shtml' },
+                    { section: '网络文明', url: 'http://www.whwx.gov.cn/wlcb/wsznl/202308/t20230801_2240980.shtml' },
+                    { section: '网络文明', url: 'http://www.whwx.gov.cn/wlcb/wsznl/202308/t20230803_2242130.shtml' },
+                    { section: '网络文明', url: 'http://www.whwx.gov.cn/wlcb/wsznl/202308/t20230804_2243036.shtml' },
+                    { section: '网络文明', url: 'http://www.whwx.gov.cn/wlcb/wsznl/202308/t20230804_2243038.shtml' },
+                    { section: '网络文明', url: 'http://www.whwx.gov.cn/wlcb/wsznl/202308/t20230808_2244234.shtml' },
+                    { section: '网络文明', url: 'http://www.whwx.gov.cn/wlcb/wsznl/202308/t20230810_2245070.shtml' },
+                    { section: '网络文明', url: 'http://www.whwx.gov.cn/wlcb/wsznl/202308/t20230814_2246706.shtml' },
+                    { section: '网络文明', url: 'http://www.whwx.gov.cn/wlcb/wsznl/202308/t20230814_2246802.shtml' },
+                    { section: '网络文明', url: 'http://www.whwx.gov.cn/wlcb/wsznl/202308/t20230815_2247403.shtml' },
+                    { section: '网络文明', url: 'http://www.whwx.gov.cn/wlcb/wsznl/202308/t20230822_2250898.shtml' },
+                    // wlwh (19)
+                    { section: '网络文化', url: 'http://www.whwx.gov.cn/wlwh/202307/t20230724_2236192.shtml' },
+                    { section: '网络文化', url: 'http://www.whwx.gov.cn/wlwh/202307/t20230728_2238299.shtml' },
+                    { section: '网络文化', url: 'http://www.whwx.gov.cn/wlwh/202307/t20230728_2238345.shtml' },
+                    { section: '网络文化', url: 'http://www.whwx.gov.cn/wlwh/202307/t20230728_2238346.shtml' },
+                    { section: '网络文化', url: 'http://www.whwx.gov.cn/wlwh/202307/t20230728_2238381.shtml' },
+                    { section: '网络文化', url: 'http://www.whwx.gov.cn/wlwh/202307/t20230728_2238384.shtml' },
+                    { section: '网络文化', url: 'http://www.whwx.gov.cn/wlwh/202308/t20230801_2240952.shtml' },
+                    { section: '网络文化', url: 'http://www.whwx.gov.cn/wlwh/202308/t20230801_2240970.shtml' },
+                    { section: '网络文化', url: 'http://www.whwx.gov.cn/wlwh/202308/t20230801_2240972.shtml' },
+                    { section: '网络文化', url: 'http://www.whwx.gov.cn/wlwh/202308/t20230801_2241012.shtml' },
+                    { section: '网络文化', url: 'http://www.whwx.gov.cn/wlwh/202308/t20230801_2241119.shtml' },
+                    { section: '网络文化', url: 'http://www.whwx.gov.cn/wlwh/202308/t20230802_2241622.shtml' },
+                    { section: '网络文化', url: 'http://www.whwx.gov.cn/wlwh/202308/t20230803_2242145.shtml' },
+                    { section: '网络文化', url: 'http://www.whwx.gov.cn/wlwh/202308/t20230804_2243066.shtml' },
+                    { section: '网络文化', url: 'http://www.whwx.gov.cn/wlwh/202308/t20230804_2243067.shtml' },
+                    { section: '网络文化', url: 'http://www.whwx.gov.cn/wlwh/202308/t20230814_2246741.shtml' },
+                    { section: '网络文化', url: 'http://www.whwx.gov.cn/wlwh/202308/t20230815_2247480.shtml' },
+                    { section: '网络文化', url: 'http://www.whwx.gov.cn/wlwh/202308/t20230822_2250880.shtml' },
+                    { section: '网络文化', url: 'http://www.whwx.gov.cn/wlwh/202308/t20230822_2250955.shtml' }
+                ];
+
+                const govList = govRaw.map((item, index) => ({
+                    id: index + 1,
+                    section: item.section,
+                    url: item.url,
+                    myRole: '排版编辑'
+                }));
+
+                const t = (zhText, enText) => {
+                    return lang.value === 'zh' ? zhText : enText;
+                };
+
+                const setLang = (targetLang) => {
+                    lang.value = targetLang;
+                };
+
+                const toggleLang = () => {
+                    lang.value = lang.value === 'zh' ? 'en' : 'zh';
+                };
+
+                const getCategoryCount = (catId) => {
+                    if (catId === 'all') return newsList.length + wechatList.length + govList.length;
+                    if (catId === 'news') return newsList.length;
+                    if (catId === 'wechat') return wechatList.length;
+                    if (catId === 'government') return govList.length;
+                    return 0;
+                };
+
+                // ScrollSpy Implementation
+                onMounted(() => {
+                    lucide.createIcons();
+
+                    const observerOptions = {
+                        root: null,
+                        rootMargin: '-20% 0px -70% 0px',
+                        threshold: 0
+                    };
+
+                    const observer = new IntersectionObserver((entries) => {
+                        entries.forEach(entry => {
+                            if (entry.isIntersecting) {
+                                activeSection.value = entry.target.id;
+                            }
+                        });
+                    }, observerOptions);
+
+                    navItems.forEach(item => {
+                        const el = document.getElementById(item.id);
+                        if (el) observer.observe(el);
+                    });
+                });
+
+                return {
+                    lang,
+                    activeSection,
+                    activeTab,
+                    isMobileMenuOpen,
+                    navItems,
+                    categoryTabs,
+                    metrics,
+                    services,
+                    skills,
+                    newsList,
+                    wechatList,
+                    govList,
+                    t,
+                    setLang,
+                    toggleLang,
+                    getCategoryCount
+                };
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>
